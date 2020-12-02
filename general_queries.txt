@@ -1,0 +1,68 @@
+As part of the module compliance the following detective controls are deployed in every customer account:
+- GuardDuty
+- CloudTrail
+- AWSConfig
+- SecurityHub
+
+Querying VPC flog logs:
+
+#Rejected requests by IP address:
+filter action="REJECT" | stats count(*) as numRejections by srcAddr | sort numRejections desc
+
+# Reject requests originating from inside your VPC
+filter action="REJECT" and srcAddr like /^10\./ | stats count(*) as numRejections by srcAddr | sort numRejections desc
+
+#Filter requests from a specific IP address:
+filter srcAddr = "192.0.2.1" | fields @timestamp, interfaceId, dstAddr, dstPort, action
+
+#Request count from a private IP address by destination address
+filter srcAddr = "10.1.1.1" | stats count(*) as numConnections by dstAddr | sort numConnections desc
+
+Querying cloudwatch logs for IAM issues
+# IAM access denied attempts:
+filter errorCode like /Unauthorized|Denied|Forbidden/ | fields awsRegion, userIdentity.arn, eventSource, eventName, sourceIPAddress, userAgent
+
+#List actions performed by a specific access keys
+filter userIdentity.accessKeyId ="AKIAIOSFODNN7EXAMPLE" | fields awsRegion, eventSource, eventName, sourceIPAddress, userAgent
+
+#List IAM action performed by an IP address
+filter sourceIPAddress = "192.0.2.1" | fields awsRegion, userIdentity.arn, eventSource, eventName, sourceIPAddress, userAgent
+
+
+#Role investigation
+rolename = 'test-role'
+previous_days_to_search = 31
+
+query = 'filter userIdentity.sessionContext.sessionIssuer.userName = "' + rolename + '" | fields eventTime, awsRegion, eventSource, eventName, errorCode, errorMessage, sourceIPAddress, userAgent'
+#Alternate based on arn: query = 'filter userIdentity.sessionContext.sessionIssuer.arn = "' + rolearn + '" | fields eventTime, awsRegion, eventName, eventSource, errorCode, errorMessage, sourceIPAddress, userAgent'
+response = helpers.execute_log_query(cloudtrail_log_group, query, previous_days_to_search)
+formatted_results = [helpers.convert_dictionary_to_object(r) for r in response['results']]
+pd.DataFrame(formatted_results)
+
+#Roles recently created
+query = 'filter eventName="CreateRole" | fields eventTime, requestParameters.userName, responseElements.user.arn, userIdentity.arn, responseElements.role.arn, sourceIPAddress, errorCode, userAgent'
+response = helpers.execute_log_query(cloudtrail_log_group, query, previous_days_to_search)
+formatted_results = [helpers.convert_dictionary_to_object(r) for r in response['results']]
+pd.DataFrame(formatted_results)
+
+#BLock user access
+username='test'
+
+iam = boto3.client('iam')
+response = iam.put_user_policy(UserName=username,PolicyName='Block',PolicyDocument='{"Version":"2012-10-17","Statement":{"Effect":"Deny","Action":"*","Resource":"*"}}')
+status_code = response['ResponseMetadata']['HTTPStatusCode']
+if status_code == 200:
+    print("Policy attached successfully")
+else:
+    print("Policy attachment failed")
+
+#Block roles access
+rolename='test-role'
+
+iam = boto3.client('iam')
+response = iam.put_role_policy(RoleName=rolename,PolicyName='Block',PolicyDocument='{"Version":"2012-10-17","Statement":{"Effect":"Deny","Action":"*","Resource":"*"}}')
+status_code = response['ResponseMetadata']['HTTPStatusCode']
+if status_code == 200:
+    print("Policy attached successfully")
+else:
+    print("Policy attachment failed")

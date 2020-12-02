@@ -1,0 +1,7 @@
+CodeBuild: Unittest
+Other ECR: amazonlinux:2017.09
+Location: BuildSpecs/unittest-buildspec.yml
+
+Codebuild: Prepare
+Other ECR: amazonlinux:2017.09
+Location: BuildSpecs/prepare-buildspec.yml

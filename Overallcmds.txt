@@ -1,0 +1,4 @@
+
+
+Exercise 3.2
+aws ssm put-parameter --name "TEST-DATABASE-MASTER-PASSWORD" --value 'QQ6j55MfvfOA5rBal41LbrIZTd1LWIGG07i6W3LXWP6iqx4t2GEyXzIgsgqlS0J4' --type "SecureString"

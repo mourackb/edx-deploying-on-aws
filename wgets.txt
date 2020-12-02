@@ -1,7 +1,28 @@
 wget https://us-west-2-tcdev.s3.amazonaws.com/courses/AWS-100-ADD/v1.0.0/exercises/ex-cloud9.zip
+unzip ex-cloud9.zip
 
 wget https://us-west-2-tcdev.s3.amazonaws.com/courses/AWS-100-ADD/v1.0.0/exercises/ex-beanstalk.zip
+unzip ex-beanstalk.zip
 
 wget https://us-west-2-tcdev.s3.amazonaws.com/courses/AWS-100-ADD/v1.0.0/exercises/ex-codecommit.zip
+unzip ex-codecommit.zip
 
 wget https://us-west-2-tcdev.s3.amazonaws.com/courses/AWS-100-ADD/v1.0.0/exercises/ex-codebuild.zip
+unzip ex-codebuild.zip
+
+wget https://us-west-2-tcdev.s3.amazonaws.com/courses/AWS-100-ADD/v1.0.0/exercises/ex-cfn.zip
+unzip ex-cfn.zip
+
+wget https://us-west-2-tcdev.s3.amazonaws.com/courses/AWS-100-ADD/v1.0.0/exercises/ex-codedeploy.zip
+unzip ex-codedeploy.zip
+
+wget https://us-west-2-tcdev.s3.amazonaws.com/courses/AWS-100-ADD/v1.0.0/exercises/ex-acctests.zip
+unzip ex-acctests.zip
+
+ wget https://us-west-2-tcdev.s3.amazonaws.com/courses/AWS-100-ADD/v1.0.0/exercises/ex-finalpipeline.zip
+ unzip ex-finalpipeline.zip
+
+git init
+git add .
+git checkout -b dev
+git remote add origin
